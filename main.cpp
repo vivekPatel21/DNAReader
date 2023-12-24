@@ -40,7 +40,7 @@ bool isSpace(const char* topStrand){
 
 char* compliment(const char* topStrand){
     /*TODO make the compliment to the top strand, after checking if there is a space or randomly in the string.
-        Compliment must be the same length and as well as that there is a specific convention to follow.
+        Compliment must be the same length and as well as that there is a specific convention to follow. ok
      */
     std::size_t size = std::strlen(topStrand);
     for(int i = 0;i < size; i++){
