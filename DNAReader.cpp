@@ -11,14 +11,14 @@ char* readFromFile(const char* filepath);
 bool hasSpace(const char* topStrand);
 char* generateComplement(const char* topStrand);
 char* recursiveBuilder(int size, int iteration, const char* topStrand, char* current);
-std::vector<std::vector<char>>seperatedStrands(const char*strand,int separater);
+std::vector<std::vector<char>> separatedStrands(const char* strand, int separater); // Corrected function name
+void print2DVector(const std::vector<std::vector<char>>& charList);
 
 char* readFromFile(const char* filepath) {
     std::ifstream inputFile(filepath);
-
     if (!inputFile.is_open()) {
-        std::cerr << "Error opening file" << std::endl;
-        return nullptr; // Use nullptr for error handling
+        std::cerr << "Error opening file: " << std::endl;
+        return nullptr;
     }
 
     // Determine the size of the file
@@ -34,7 +34,7 @@ char* readFromFile(const char* filepath) {
 
     buffer[fileSize] = '\0'; // Null-terminate the buffer
 
-    return buffer; // Return the pointer to the allocated memory
+    return buffer;
 }
 
 bool hasSpace(const char* topStrand) {
@@ -79,16 +79,16 @@ char* recursiveBuilder(int size, int iteration, const char* topStrand, char* cur
     return current;
 }
 
-std::vector<std::vector<char>>seperatedStrands(const char*strand,int separater){
+std::vector<std::vector<char>> separatedStrands(const char* strand, int separater) {
     std::size_t size = std::strlen(strand);
     int cols = separater;
     int rows = (size + cols - 1) / cols;
     std::vector<std::vector<char>> charList(rows, std::vector<char>(cols));
 
-    for(int i = 0; i < size; i++){
-        int row = i/cols;
+    for (int i = 0; i < size; i++) {
+        int row = i / cols;
         int col = i % cols;
-        charList[row][col] =strand[i];
+        charList[row][col] = strand[i];
     }
 
     return charList;
@@ -110,14 +110,14 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const char* filepath = argv[1];
+    const char* filepath = argv[0];
 
     char* topStrand = readFromFile(filepath);
 
     bool flag1 = hasSpace(topStrand);
 
     if (flag1) {
-        std::cout << "This DNA is missing a purine." << std::endl;
+        std::cout << "This DNA is missing a nucleotide." << std::endl;
         delete[] topStrand;
         return 1;
     }
@@ -127,22 +127,17 @@ int main(int argc, char* argv[]) {
     std::size_t topStrandSize = std::strlen(topStrand);
     std::size_t complementStrandSize = std::strlen(complementStrand);
 
-    if(topStrandSize!=complementStrandSize){
-        std::cout << "This DNA is not the same size, because one of the nucleotides are not real in the top strand." <<std::endl;
+    if (topStrandSize != complementStrandSize) {
+        std::cout << "This DNA is not the same size because one of the nucleotides is not real in the top strand." << std::endl;
         return 1;
-    } else {
-        std::cout << "There is no real problem in this DNA segment at first glance." << std::endl;
     }
 
-
-
-    std::vector<std::vector<char>>seperatedTopStrand = seperatedStrands(topStrand,argc);
-    std::vector<std::vector<char>>seperatedCompliment = seperatedStrands(complementStrand,argc);
+    std::vector<std::vector<char>> separatedTopStrand = separatedStrands(topStrand, argc);
+    std::vector<std::vector<char>> separatedCompliment = separatedStrands(complementStrand, argc);
 
     std::cout << "Separated Top Strand and Compliment Strands" << std::endl;
-    print2DVector(seperatedTopStrand);
-    print2DVector(seperatedCompliment);
-
+    print2DVector(separatedTopStrand);
+    print2DVector(separatedCompliment);
 
     delete[] topStrand;
     delete[] complementStrand;
