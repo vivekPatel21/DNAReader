@@ -1,41 +1,15 @@
 //Author Vivek Patel
 
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <cstring>
 #include <vector>
 
 // Function prototypes
-char* readFromFile(const char* filepath);
 bool hasSpace(const char* topStrand);
 char* generateComplement(const char* topStrand);
 char* recursiveBuilder(int size, int iteration, const char* topStrand, char* current);
 std::vector<std::vector<char>> separatedStrands(const char* strand, int separater); // Corrected function name
 void print2DVector(const std::vector<std::vector<char>>& charList);
-
-char* readFromFile(const char* filepath) {
-    std::ifstream inputFile(filepath);
-    if (!inputFile.is_open()) {
-        std::cerr << "Error opening file: " << std::endl;
-        return nullptr;
-    }
-
-    // Determine the size of the file
-    inputFile.seekg(0, std::ios::end);
-    std::streampos fileSize = inputFile.tellg();
-    inputFile.seekg(0, std::ios::beg);
-
-    // Allocate memory for the char array
-    char* buffer = new char[fileSize += 1]; // +1 for null terminator
-    inputFile.read(buffer, fileSize);
-
-    inputFile.close();
-
-    buffer[fileSize] = '\0'; // Null-terminate the buffer
-
-    return buffer;
-}
 
 bool hasSpace(const char* topStrand) {
     std::size_t size = std::strlen(topStrand);
@@ -96,50 +70,59 @@ std::vector<std::vector<char>> separatedStrands(const char* strand, int separate
 
 void print2DVector(const std::vector<std::vector<char>>& charList) {
     for (const auto& row : charList) {
-        for (char element : row) {
-            std::cout << element << ' ';
+        std::cout << "[";
+        for (auto it = row.begin(); it != row.end(); ++it) {
+            std::cout << *it;
+            if (std::next(it) != row.end()) {
+                std::cout << ",";
+            }
         }
-        std::cout << std::endl;
+        std::cout << "] ";
     }
+    std::cout << std::endl;
 }
 
+
+
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <filepath>" << std::endl;
-        std::cout << "error length too short";
+    if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " <DNA sequence> <separator>" << std::endl;
+        std::cout << "error: insufficient arguments" << std::endl;
         return 1;
     }
 
-    const char* filepath = argv[0];
+    const char* dnaSequence = argv[1];
+    int separator = std::atoi(argv[2]);
 
-    char* topStrand = readFromFile(filepath);
+    if (separator <= 0) {
+        std::cerr << "Error: Separator must be a positive integer." << std::endl;
+        return 1;
+    }
 
-    bool flag1 = hasSpace(topStrand);
+    bool flag1 = hasSpace(dnaSequence);
 
     if (flag1) {
         std::cout << "This DNA is missing a nucleotide." << std::endl;
-        delete[] topStrand;
         return 1;
     }
 
-    char* complementStrand = generateComplement(topStrand);
+    char* complementStrand = generateComplement(dnaSequence);
 
-    std::size_t topStrandSize = std::strlen(topStrand);
+    std::size_t dnaSequenceSize = std::strlen(dnaSequence);
     std::size_t complementStrandSize = std::strlen(complementStrand);
 
-    if (topStrandSize != complementStrandSize) {
+    if (dnaSequenceSize != complementStrandSize) {
         std::cout << "This DNA is not the same size because one of the nucleotides is not real in the top strand." << std::endl;
         return 1;
     }
 
-    std::vector<std::vector<char>> separatedTopStrand = separatedStrands(topStrand, argc);
-    std::vector<std::vector<char>> separatedCompliment = separatedStrands(complementStrand, argc);
+    std::vector<std::vector<char>> separatedDnaSequence = separatedStrands(dnaSequence, separator);
+    std::vector<std::vector<char>> separatedComplement = separatedStrands(complementStrand, separator);
 
-    std::cout << "Separated Top Strand and Compliment Strands" << std::endl;
-    print2DVector(separatedTopStrand);
-    print2DVector(separatedCompliment);
+    std::cout << "Separated DNA Sequence and Complement Strands" << std::endl;
+    print2DVector(separatedDnaSequence);
+    print2DVector(separatedComplement);
 
-    delete[] topStrand;
     delete[] complementStrand;
 
     return 0;
